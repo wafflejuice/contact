@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
                                   fontSize: 12, fontWeight: FontWeight.bold)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
-                            children: [Icon(Icons.heart_broken), Text('4')],
+                            children: [Icon(Icons.favorite), Text('4')],
                           )
                         ],
                       ),
