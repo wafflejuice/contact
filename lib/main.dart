@@ -12,31 +12,14 @@ class MyApp extends StatelessWidget {
     var app = MaterialApp(
       home: Scaffold(
         appBar: AppBar(),
-        body: ListView(
-          children: [
-            Row(children: [
-              Icon(Icons.account_circle),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('John'),
-              ),
-            ]),
-            Row(children: [
-              Icon(Icons.account_circle),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('John'),
-              ),
-            ]),
-            Row(children: [
-              Icon(Icons.account_circle),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('John'),
-              ),
-            ]),
-          ],
-        ),
+        body: ListView.builder(
+            itemCount: 3,
+            itemBuilder: (context, i) {
+              return ListTile(
+                leading: Image.asset('assets/doge.png'),
+                title: Text('John'),
+              );
+            }),
         bottomNavigationBar: BottomBar(),
       ),
     );
