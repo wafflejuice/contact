@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MaterialApp(home: MyApp()),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -17,27 +19,29 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    var app = MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(),
-        body: ListView.builder(
-            itemCount: 3,
-            itemBuilder: (context, i) {
-              return ListTile(
-                leading: Text(likeCnts[i].toString()),
-                title: Text(names[i]),
-                trailing: ElevatedButton(
-                  child: Text('좋아요'),
-                  onPressed: () {
-                    setState(() {
-                      likeCnts[i]++;
-                    });
-                  },
-                ),
-              );
-            }),
-        bottomNavigationBar: BottomBar(),
+    var app = Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Contact'),
+                  content: TextField(),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel')),
+                    TextButton(onPressed: () {}, child: Text('OK')),
+                  ],
+                );
+              });
+        },
       ),
+      appBar: AppBar(),
+      bottomNavigationBar: BottomBar(),
     );
 
     return app;
