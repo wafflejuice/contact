@@ -15,8 +15,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var a = 3;
-  var names = ['John', 'Smith', 'Jane'];
-  var likeCnts = [0, 0, 0];
+  var names = ['John', 'Smith', 'Jane', 'Anaconda'];
+  var phoneNumbers = [
+    '010-1234-5676',
+    '010-2645-2179',
+    '010-9965-5210',
+    '010-2341-6395'
+  ];
+
+  addPerson(newPersonName, newPhoneNumber) {
+    setState(() {
+      names.add(newPersonName);
+      phoneNumbers.add(newPhoneNumber);
+      names.sort();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +39,7 @@ class _MyAppState extends State<MyApp> {
           showDialog(
               context: context,
               builder: (context) {
-                return DialogUI(addPerson: (newPersonName) {
-                  setState(() {
-                    names.add(newPersonName);
-                  });
-                });
+                return DialogUI(addPerson: addPerson);
               });
         },
       ),
@@ -40,7 +49,17 @@ class _MyAppState extends State<MyApp> {
         itemBuilder: (context, i) {
           return ListTile(
             leading: Icon(Icons.person),
+            style: ListTileStyle.drawer,
             title: Text(names[i]),
+            subtitle: Text(phoneNumbers[i]),
+            trailing: ElevatedButton(
+              child: Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  names.removeAt(i);
+                });
+              },
+            ),
           );
         },
       ),
@@ -54,14 +73,25 @@ class _MyAppState extends State<MyApp> {
 class DialogUI extends StatelessWidget {
   DialogUI({Key? key, this.addPerson}) : super(key: key);
   final addPerson;
-  var inputData = TextEditingController();
+  var personNameInput = TextEditingController();
+  var phoneNumberInput = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Contact'),
-      content: TextField(
-        controller: inputData,
+      content: SizedBox(
+        height: 150,
+        child: Column(
+          children: [
+            TextField(
+              controller: personNameInput,
+            ),
+            TextField(
+              controller: phoneNumberInput,
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -71,7 +101,11 @@ class DialogUI extends StatelessWidget {
             child: Text('Cancel')),
         TextButton(
             onPressed: () {
-              addPerson(inputData.text);
+              if (personNameInput.text == '') {
+                return;
+              }
+
+              addPerson(personNameInput.text, phoneNumberInput.text);
               Navigator.of(context).pop();
             },
             child: Text('OK')),
