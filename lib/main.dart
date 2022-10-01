@@ -26,17 +26,24 @@ class _MyAppState extends State<MyApp> {
           showDialog(
               context: context,
               builder: (context) {
-                return DialogUI(
-                    state: a,
-                    incrementState: () {
-                      setState(() {
-                        a++;
-                      });
-                    });
+                return DialogUI(addPerson: (newPersonName) {
+                  setState(() {
+                    names.add(newPersonName);
+                  });
+                });
               });
         },
       ),
-      appBar: AppBar(),
+      appBar: AppBar(title: Text(a.toString())),
+      body: ListView.builder(
+        itemCount: names.length,
+        itemBuilder: (context, i) {
+          return ListTile(
+            leading: Icon(Icons.person),
+            title: Text(names[i]),
+          );
+        },
+      ),
       bottomNavigationBar: BottomBar(),
     );
 
@@ -45,15 +52,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 class DialogUI extends StatelessWidget {
-  DialogUI({Key? key, this.state, this.incrementState}) : super(key: key);
-  var state;
-  final incrementState;
+  DialogUI({Key? key, this.addPerson}) : super(key: key);
+  final addPerson;
+  var inputData = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Contact'),
-      content: TextField(),
+      content: TextField(
+        controller: inputData,
+      ),
       actions: [
         TextButton(
             onPressed: () {
@@ -62,9 +71,10 @@ class DialogUI extends StatelessWidget {
             child: Text('Cancel')),
         TextButton(
             onPressed: () {
-              incrementState();
+              addPerson(inputData.text);
+              Navigator.of(context).pop();
             },
-            child: Text(state.toString())),
+            child: Text('OK')),
       ],
     );
   }
