@@ -25,18 +25,7 @@ class _MyAppState extends State<MyApp> {
           showDialog(
               context: context,
               builder: (context) {
-                return AlertDialog(
-                  title: Text('Contact'),
-                  content: TextField(),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cancel')),
-                    TextButton(onPressed: () {}, child: Text('OK')),
-                  ],
-                );
+                return DialogUI();
               });
         },
       ),
@@ -45,6 +34,26 @@ class _MyAppState extends State<MyApp> {
     );
 
     return app;
+  }
+}
+
+class DialogUI extends StatelessWidget {
+  const DialogUI({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Contact'),
+      content: TextField(),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel')),
+        TextButton(onPressed: () {}, child: Text('OK')),
+      ],
+    );
   }
 }
 
