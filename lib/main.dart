@@ -14,6 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var a = 3;
   var names = ['John', 'Smith', 'Jane'];
   var likeCnts = [0, 0, 0];
 
@@ -25,7 +26,13 @@ class _MyAppState extends State<MyApp> {
           showDialog(
               context: context,
               builder: (context) {
-                return DialogUI();
+                return DialogUI(
+                    state: a,
+                    incrementState: () {
+                      setState(() {
+                        a++;
+                      });
+                    });
               });
         },
       ),
@@ -38,7 +45,9 @@ class _MyAppState extends State<MyApp> {
 }
 
 class DialogUI extends StatelessWidget {
-  const DialogUI({Key? key}) : super(key: key);
+  DialogUI({Key? key, this.state, this.incrementState}) : super(key: key);
+  var state;
+  final incrementState;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,11 @@ class DialogUI extends StatelessWidget {
               Navigator.of(context).pop();
             },
             child: Text('Cancel')),
-        TextButton(onPressed: () {}, child: Text('OK')),
+        TextButton(
+            onPressed: () {
+              incrementState();
+            },
+            child: Text(state.toString())),
       ],
     );
   }
