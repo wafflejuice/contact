@@ -1,4 +1,6 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(
@@ -14,20 +16,43 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var a = 3;
-  var names = ['John', 'Smith', 'Jane', 'Anaconda'];
-  var phoneNumbers = [
-    '010-1234-5676',
-    '010-2645-2179',
-    '010-9965-5210',
-    '010-2341-6395'
-  ];
+  getPermission() async {
+    var status = await Permission.contacts.status;
 
-  addPerson(newPersonName, newPhoneNumber) {
+    if (status.isGranted) {
+      print('allowed');
+      var contacts = await ContactsService.getContacts();
+      setState(() {
+        names = contacts;
+      });
+    } else if (status.isDenied) {
+      print('not allowed');
+
+      final newStatus = await Permission.contacts.request();
+
+      if (newStatus.isRestricted ||
+          newStatus.isPermanentlyDenied ||
+          newStatus.isDenied) {
+        openAppSettings();
+      }
+    }
+  }
+
+  List<Contact> names = [];
+
+  addPerson(Contact newPerson) async {
+    await ContactsService.addContact(newPerson);
+    var newContacts = await ContactsService.getContacts();
     setState(() {
-      names.add(newPersonName);
-      phoneNumbers.add(newPhoneNumber);
-      names.sort();
+      names = newContacts;
+    });
+  }
+
+  deletePerson(Contact target) async {
+    await ContactsService.deleteContact(target);
+    var newContacts = await ContactsService.getContacts();
+    setState(() {
+      names = newContacts;
     });
   }
 
@@ -43,21 +68,27 @@ class _MyAppState extends State<MyApp> {
               });
         },
       ),
-      appBar: AppBar(title: Text(a.toString())),
+      appBar: AppBar(
+        title: Text(names.length.toString()),
+        actions: [
+          IconButton(
+              onPressed: () {
+                getPermission();
+              },
+              icon: Icon(Icons.contacts))
+        ],
+      ),
       body: ListView.builder(
         itemCount: names.length,
         itemBuilder: (context, i) {
           return ListTile(
             leading: Icon(Icons.person),
             style: ListTileStyle.drawer,
-            title: Text(names[i]),
-            subtitle: Text(phoneNumbers[i]),
+            title: Text(names[i].givenName!),
             trailing: ElevatedButton(
               child: Text('Delete'),
               onPressed: () {
-                setState(() {
-                  names.removeAt(i);
-                });
+                deletePerson(names[i]);
               },
             ),
           );
@@ -74,7 +105,6 @@ class DialogUI extends StatelessWidget {
   DialogUI({Key? key, this.addPerson}) : super(key: key);
   final addPerson;
   var personNameInput = TextEditingController();
-  var phoneNumberInput = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +116,6 @@ class DialogUI extends StatelessWidget {
           children: [
             TextField(
               controller: personNameInput,
-            ),
-            TextField(
-              controller: phoneNumberInput,
             ),
           ],
         ),
@@ -105,7 +132,7 @@ class DialogUI extends StatelessWidget {
                 return;
               }
 
-              addPerson(personNameInput.text, phoneNumberInput.text);
+              addPerson(Contact(givenName: personNameInput.text));
               Navigator.of(context).pop();
             },
             child: Text('OK')),
